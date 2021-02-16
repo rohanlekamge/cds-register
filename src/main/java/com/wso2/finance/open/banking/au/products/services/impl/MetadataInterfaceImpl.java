@@ -23,7 +23,11 @@ import org.json.JSONObject;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.util.Map;
 
@@ -44,19 +48,30 @@ public class MetadataInterfaceImpl implements MetadataInterface {
     @Override
     public Map<String, String> getADRDetails() {
 
-        JSONObject json;
+        JSONArray dataRecipientsJson = new JSONArray();
+
         try {
 
-            json = readJsonFromUrl();
-        } catch (IOException e) {
-            throw new MetadataException("Error while reading Data Recipient Endpoint", e);
+            //JSON parser object to parse read file
+            JSONParser jsonParser = new JSONParser();
+
+            try (FileReader reader = new FileReader("metadata.json"))
+            {
+                //Read JSON file
+                Object obj = jsonParser.parse(reader);
+
+                dataRecipientsJson = (JSONArray) obj;
+
+            } catch (ParseException | IOException e) {
+                e.printStackTrace();
+            }
         } catch (NullPointerException e) {
             log.debug("Unable to retrieve status from Directory. " +
                     "Possible because Common HttpPool is not initialized yet.");
             return null;
         }
 
-        JSONArray dataRecipientsJsonArray = json.getJSONArray("dataRecipients");
+        JSONArray dataRecipientsJsonArray = dataRecipientsJson.getJSONArray(Integer.parseInt("dataRecipients"));
 
         for (int r = 0; r < dataRecipientsJsonArray.length(); r++) {
             JSONObject obj = dataRecipientsJsonArray.getJSONObject(r);
@@ -73,18 +88,31 @@ public class MetadataInterfaceImpl implements MetadataInterface {
     @Override
     public Map<String, String> getSoftwareDetails() {
 
-        JSONObject json;
+
+        JSONArray softwareProductsJson = new JSONArray();
+
         try {
 
-        } catch (IOException e) {
-            throw new MetadataException("Error while reading Software Product Endpoint.", e);
+            //JSON parser object to parse read file
+            JSONParser jsonParser = new JSONParser();
+
+            try (FileReader reader = new FileReader("metadata.json"))
+            {
+                //Read JSON file
+                Object obj = jsonParser.parse(reader);
+
+                softwareProductsJson = (JSONArray) obj;
+
+            } catch (ParseException | IOException e) {
+                e.printStackTrace();
+            }
         } catch (NullPointerException e) {
             log.debug("Unable to retrieve status from Directory. " +
                     "Possible because Common HttpPool is not initialized yet.");
             return null;
         }
 
-        JSONArray softwareProductsJsonArray = json.getJSONArray("softwareProducts");
+        JSONArray softwareProductsJsonArray = softwareProductsJson.getJSONArray(Integer.parseInt("softwareProducts"));
 
         for (int jsonElementIndex = 0; jsonElementIndex < softwareProductsJsonArray.length(); jsonElementIndex++) {
             JSONObject obj = softwareProductsJsonArray.getJSONObject(jsonElementIndex);
@@ -154,16 +182,4 @@ public class MetadataInterfaceImpl implements MetadataInterface {
         return softwareDetails;
     }
 
-//    public static JSONObject readJsonFromUrl(String url) throws IOException, JSONException {
-//
-//        URL urlObject = new URL(url);
-//
-//        try (CloseableHttpClient httpclient = (CloseableHttpClient)
-//                HTTPClientUtils.getHttpClient(urlObject.getPort(), urlObject.getProtocol())) {
-//
-//            HttpGet httpGet = new HttpGet(url);
-//            CloseableHttpResponse responseBody = httpclient.execute(httpGet);
-//            return getResponse(responseBody);
-//        }
-//    }
 }
