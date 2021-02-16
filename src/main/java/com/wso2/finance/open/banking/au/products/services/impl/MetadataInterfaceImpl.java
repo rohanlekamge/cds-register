@@ -50,34 +50,30 @@ public class MetadataInterfaceImpl implements MetadataInterface {
     @Override
     public Map<String, String> getADRDetails() {
 
-        JSONArray dataRecipientsJson = new JSONArray();
+        //JSON parser object to parse read file
+        JSONParser jsonParser = new JSONParser();
+        JSONArray dataRecipientsJsonArray = new JSONArray();
 
-        try {
+        try (FileReader reader = new FileReader("metadata.json"))
+        {
+            //Read JSON file
+            Object obj = jsonParser.parse(reader);
 
-            //JSON parser object to parse read file
-            JSONParser jsonParser = new JSONParser();
+            JSONArray metadataList = (JSONArray) obj;
+            System.out.println(metadataList);
 
-            try (FileReader reader = new FileReader("metadata.json"))
-            {
-                //Read JSON file
-                Object obj = jsonParser.parse(reader);
-
-                dataRecipientsJson = (JSONArray) obj;
-
-            } catch (ParseException | IOException e) {
-                e.printStackTrace();
+            //Iterate over array
+            for(Object emp: metadataList){
+                dataRecipientsJsonArray = (JSONArray) ((JSONObject) emp).get("dataRecipients");
             }
-        } catch (NullPointerException e) {
-            log.debug("Unable to retrieve status from Directory. " +
-                    "Possible because Common HttpPool is not initialized yet.");
-            return null;
-        }
 
-        JSONArray dataRecipientsJsonArray = dataRecipientsJson.getJSONArray(Integer.parseInt("dataRecipients"));
+            for (int r = 0; r < dataRecipientsJsonArray.size(); r++) {
+                JSONObject objj = (JSONObject) dataRecipientsJsonArray.get(r);
+                dataRecipientMap.put(objj.getString("dataRecipientId"), objj.getString("dataRecipientStatus"));
+            }
 
-        for (int r = 0; r < dataRecipientsJsonArray.length(); r++) {
-            JSONObject obj = dataRecipientsJsonArray.getJSONObject(r);
-            dataRecipientMap.put(obj.getString("softwareProductId"), obj.getString("dataRecipientStatus"));
+        } catch (IOException | ParseException e) {
+            e.printStackTrace();
         }
 
         return dataRecipientMap;
@@ -91,34 +87,30 @@ public class MetadataInterfaceImpl implements MetadataInterface {
     public Map<String, String> getSoftwareDetails() {
 
 
-        JSONArray softwareProductsJson = new JSONArray();
+        //JSON parser object to parse read file
+        JSONParser jsonParser = new JSONParser();
+        JSONArray softwareProductJsonArray = new JSONArray();
 
-        try {
+        try (FileReader reader = new FileReader("metadata.json"))
+        {
+            //Read JSON file
+            Object obj = jsonParser.parse(reader);
 
-            //JSON parser object to parse read file
-            JSONParser jsonParser = new JSONParser();
+            JSONArray metadataList = (JSONArray) obj;
+            System.out.println(metadataList);
 
-            try (FileReader reader = new FileReader("metadata.json"))
-            {
-                //Read JSON file
-                Object obj = jsonParser.parse(reader);
-
-                softwareProductsJson = (JSONArray) obj;
-
-            } catch (ParseException | IOException e) {
-                e.printStackTrace();
+            //Iterate over array
+            for(Object emp: metadataList){
+                softwareProductJsonArray = (JSONArray) ((JSONObject) emp).get("softwareProducts");
             }
-        } catch (NullPointerException e) {
-            log.debug("Unable to retrieve status from Directory. " +
-                    "Possible because Common HttpPool is not initialized yet.");
-            return null;
-        }
 
-        JSONArray softwareProductsJsonArray = softwareProductsJson.getJSONArray(Integer.parseInt("softwareProducts"));
+            for (int r = 0; r < softwareProductJsonArray.size(); r++) {
+                JSONObject objj = (JSONObject) softwareProductJsonArray.get(r);
+                softwareProductMap.put(objj.getString("softwareProductId"), objj.getString("softwareProductStatus"));
+            }
 
-        for (int jsonElementIndex = 0; jsonElementIndex < softwareProductsJsonArray.length(); jsonElementIndex++) {
-            JSONObject obj = softwareProductsJsonArray.getJSONObject(jsonElementIndex);
-            softwareProductMap.put(obj.getString("softwareProductId"), obj.getString("dataRecipientStatus"));
+        } catch (IOException | ParseException e) {
+            e.printStackTrace();
         }
 
         return softwareProductMap;
@@ -224,6 +216,24 @@ public class MetadataInterfaceImpl implements MetadataInterface {
         log.debug("AU Metadata Scheduled Task is finished.");
 
         return softwareDetailsPost;
+    }
+
+    private static void parseEmployeeObject(JSONObject metadata)
+    {
+        //Get employee object within list
+        JSONObject employeeObject = (JSONObject) metadata.get("employee");
+
+        //Get employee first name
+        String firstName = (String) employeeObject.get("firstName");
+        System.out.println(firstName);
+
+        //Get employee last name
+        String lastName = (String) employeeObject.get("lastName");
+        System.out.println(lastName);
+
+        //Get employee website name
+        String website = (String) employeeObject.get("website");
+        System.out.println(website);
     }
 
 }
