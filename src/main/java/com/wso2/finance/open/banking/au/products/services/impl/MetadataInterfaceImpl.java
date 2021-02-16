@@ -17,7 +17,6 @@ import com.wso2.finance.open.banking.au.products.exception.MetadataException;
 import com.wso2.finance.open.banking.au.products.model.ADRDetails;
 import com.wso2.finance.open.banking.au.products.model.SoftwareDetails;
 import com.wso2.finance.open.banking.au.products.services.MetadataInterface;
-import com.wso2.finance.open.banking.au.products.utils.MetadataHolder;
 
 import org.json.simple.JSONArray;
 import org.json.JSONObject;
@@ -27,7 +26,6 @@ import org.apache.commons.logging.LogFactory;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -137,7 +135,6 @@ public class MetadataInterfaceImpl implements MetadataInterface {
             dataRecipientMap = getADRDetails();
         } catch (MetadataException e) {
             log.error("Error while getting statuses from directory", e);
-            MetadataHolder.setDataRecipient(null);
             return null;
         }
 
@@ -188,7 +185,6 @@ public class MetadataInterfaceImpl implements MetadataInterface {
             softwareProductMap = getSoftwareDetails();
         } catch (MetadataException e) {
             log.error("Error while getting statuses from directory", e);
-            MetadataHolder.setSoftwareProduct(null);
             return null;
         }
 
@@ -216,24 +212,6 @@ public class MetadataInterfaceImpl implements MetadataInterface {
         log.debug("AU Metadata Scheduled Task is finished.");
 
         return softwareDetailsPost;
-    }
-
-    private static void parseEmployeeObject(JSONObject metadata)
-    {
-        //Get employee object within list
-        JSONObject employeeObject = (JSONObject) metadata.get("employee");
-
-        //Get employee first name
-        String firstName = (String) employeeObject.get("firstName");
-        System.out.println(firstName);
-
-        //Get employee last name
-        String lastName = (String) employeeObject.get("lastName");
-        System.out.println(lastName);
-
-        //Get employee website name
-        String website = (String) employeeObject.get("website");
-        System.out.println(website);
     }
 
 }
