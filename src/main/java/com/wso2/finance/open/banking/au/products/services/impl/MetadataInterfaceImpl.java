@@ -18,7 +18,8 @@ import com.wso2.finance.open.banking.au.products.model.ADRDetails;
 import com.wso2.finance.open.banking.au.products.model.SoftwareDetails;
 import com.wso2.finance.open.banking.au.products.services.MetadataInterface;
 import com.wso2.finance.open.banking.au.products.utils.MetadataHolder;
-import org.json.JSONArray;
+
+import org.json.simple.JSONArray;
 import org.json.JSONObject;
 
 import org.apache.commons.logging.Log;
@@ -28,6 +29,7 @@ import org.json.simple.parser.ParseException;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Map;
 
@@ -131,12 +133,12 @@ public class MetadataInterfaceImpl implements MetadataInterface {
     @Override
     public ADRDetails postADRDetails(String dataRecipientId, String dataRecipientStatus) {
 
+        log.debug("Metadata Scheduled Task is executing.");
+
         /*
          *  Updated response is set to  this object.
          */
-        ADRDetails adrDetails = new ADRDetails();
-
-        log.debug("Metadata Scheduled Task is executing.");
+        ADRDetails adrDetailsPost = new ADRDetails();
 
         try {
             // Get Data Recipient statuses
@@ -147,9 +149,30 @@ public class MetadataInterfaceImpl implements MetadataInterface {
             return null;
         }
 
+        JSONObject adrDetails = new JSONObject();
+        adrDetails.put("dataRecipientId", dataRecipientId);
+        adrDetails.put("dataRecipientStatus", dataRecipientStatus);
+
+        JSONObject adrDetailsObject = new JSONObject();
+        adrDetailsObject.put("dataRecipients", adrDetails);
+
+        //Add metadata to list
+        JSONArray adrDetailsList = new JSONArray();
+        adrDetailsList.add(adrDetailsObject);
+
+        //Write JSON file
+        try (FileWriter file = new FileWriter("metadata.json")) {
+
+            file.write(adrDetailsList.toJSONString());
+            file.flush();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         log.debug("Metadata Scheduled Task is finished.");
 
-        return adrDetails;
+        return adrDetailsPost;
     }
 
     /**
@@ -164,7 +187,7 @@ public class MetadataInterfaceImpl implements MetadataInterface {
         /*
          *  updated response is set to  this object.
          */
-        SoftwareDetails softwareDetails = new SoftwareDetails();
+        SoftwareDetails softwareDetailsPost = new SoftwareDetails();
 
         log.debug("Metadata Scheduled Task is executing.");
 
@@ -177,9 +200,30 @@ public class MetadataInterfaceImpl implements MetadataInterface {
             return null;
         }
 
+        JSONObject softwareDetails = new JSONObject();
+        softwareDetails.put("softwareProductId", softwareProductId);
+        softwareDetails.put("softwareProductStatus", softwareProductStatus);
+
+        JSONObject softwareDetailsObject = new JSONObject();
+        softwareDetailsObject.put("softwareProducts", softwareDetails);
+
+        //Add metadata to list
+        JSONArray softwareDetailsList = new JSONArray();
+        softwareDetailsList.add(softwareDetailsObject);
+
+        //Write JSON file
+        try (FileWriter file = new FileWriter("metadata.json")) {
+
+            file.write(softwareDetailsList.toJSONString());
+            file.flush();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         log.debug("AU Metadata Scheduled Task is finished.");
 
-        return softwareDetails;
+        return softwareDetailsPost;
     }
 
 }
