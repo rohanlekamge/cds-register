@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ ~ Copyright (c) 2021, WSO2 Inc. (http://www.wso2.com). All Rights Reserved.
+ ~
+ ~ This software is the property of WSO2 Inc. and its suppliers, if any.
+ ~ Dissemination of any information or reproduction of any material contained
+ ~ herein is strictly forbidden, unless permitted by WSO2 in accordance with
+ ~ the WSO2 Commercial License available at http://wso2.com/licenses.
+ ~ For specific language governing the permissions and limitations under this
+ ~ license, please see the license as well as any agreement you’ve entered into
+ ~ with WSO2 governing the purchase of this software and any associated services.
+-->
+
+
+
+<!--
+    This file defines class loading policy of the whole container. But this behaviour can be overridden by individual webapps by putting this file into the META-INF/ directory.   
+-->
+<Classloading xmlns="http://wso2.org/projects/as/classloading">
+
+    <!-- Parent-first or child-first. Default behaviour is child-first.-->
+    <ParentFirst>false</ParentFirst>
+
+    <!-- 
+	Default environments that contains provides to all the webapps. This can be overridden by individual webapps by specifing required environments 
+	Tomcat environment is the default and every webapps gets it even if they didn't specify it.
+	e.g. If a webapps requires CXF, they will get both Tomcat and CXF.
+     -->
+    <Environments>Carbon,CXF3</Environments>
+</Classloading>

@@ -1,35 +1,44 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
+<!--
+ ~ Copyright (c) 2019, WSO2 Inc. (http://www.wso2.com). All Rights Reserved.
+ ~
+ ~ This software is the property of WSO2 Inc. and its suppliers, if any.
+ ~ Dissemination of any information or reproduction of any material contained
+ ~ herein is strictly forbidden, unless permitted by WSO2 in accordance with
+ ~ the WSO2 Commercial License available at http://wso2.com/licenses.
+ ~ For specific language governing the permissions and limitations under this
+ ~ license, please see the license as well as any agreement you’ve entered into
+ ~ with WSO2 governing the purchase of this software and any associated services.
+-->
 <web-app version="2.5" xmlns="http://java.sun.com/xml/ns/javaee"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://java.sun.com/xml/ns/javaee
-http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
+         http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
 
-    <display-name>Sample REST API</display-name>
-    <description>Sample REST API</description>
-
-    <context-param>
-        <param-name>contextConfigLocation</param-name>
-        <param-value>WEB-INF/beans.xml</param-value>
-    </context-param>
-
-    <listener>
-        <listener-class>
-            org.springframework.web.context.ContextLoaderListener
-        </listener-class>
-    </listener>
+    <display-name>CDS-Register</display-name>
 
     <servlet>
-        <servlet-name>CXFServlet</servlet-name>
+        <servlet-name>JAXServlet</servlet-name>
+        <display-name>JAX-WS/JAX-RS Servlet</display-name>
+        <description>JAX-WS/JAX-RS Endpoint</description>
         <servlet-class>
             org.apache.cxf.transport.servlet.CXFServlet
         </servlet-class>
+        <init-param>
+            <param-name>service-list-stylesheet</param-name>
+            <param-value>servicelist.css</param-value>
+        </init-param>
+        <init-param>
+            <param-name>jersey.config.server.provider.classnames</param-name>
+            <param-value>org.glassfish.jersey.media.multipart.MultiPartFeature</param-value>
+        </init-param>
+
         <load-on-startup>1</load-on-startup>
     </servlet>
 
     <servlet-mapping>
-        <servlet-name>CXFServlet</servlet-name>
-        <url-pattern>/*</url-pattern>
+        <servlet-name>JAXServlet</servlet-name>
+        <url-pattern>/services/*</url-pattern>
     </servlet-mapping>
 
     <session-config>
@@ -37,3 +46,4 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
     </session-config>
 
 </web-app>
+

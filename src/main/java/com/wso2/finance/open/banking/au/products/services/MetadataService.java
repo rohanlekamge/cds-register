@@ -17,34 +17,76 @@ import com.wso2.finance.open.banking.au.products.model.ADRDetails;
 import com.wso2.finance.open.banking.au.products.model.SoftwareDetails;
 import com.wso2.finance.open.banking.au.products.services.impl.MetadataInterfaceImpl;
 import io.swagger.annotations.ApiParam;
+import org.json.JSONObject;
+import org.json.simple.JSONArray;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
+import javax.jws.WebService;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.Map;
 
 /**
  * Metadata Service.
  */
-@Path("/")
+@Path("/register")
 public class MetadataService {
 
     private static Map<String, String> softwareProductMap;
     private static Map<String, String> dataRecipientMap;
 
+    static {
+
+        //JSON parser object to parse read file
+        JSONParser jsonParser = new JSONParser();
+        JSONArray dataRecipientsJsonArray = new JSONArray();
+        JSONArray softwareProductJsonArray = new JSONArray();
+
+        try (FileReader reader = new FileReader("metadata.json"))
+        {
+            //Read JSON file
+            Object obj = jsonParser.parse(reader);
+
+            JSONArray metadataList = (JSONArray) obj;
+            System.out.println(metadataList);
+
+            //Iterate over array
+            for(Object emp: metadataList){
+                dataRecipientsJsonArray = (JSONArray) ((JSONObject) emp).get("dataRecipients");
+                softwareProductJsonArray = (JSONArray) ((JSONObject) emp).get("softwareProducts");
+            }
+
+            for (int r = 0; r < dataRecipientsJsonArray.size(); r++) {
+                JSONObject objj = (JSONObject) dataRecipientsJsonArray.get(r);
+                dataRecipientMap.put(objj.getString("dataRecipientId"), objj.getString("dataRecipientStatus"));
+            }
+
+            for (int r = 0; r < softwareProductJsonArray.size(); r++) {
+                JSONObject objj = (JSONObject) softwareProductJsonArray.get(r);
+                softwareProductMap.put(objj.getString("softwareProductId"), objj.getString("softwareProductStatus"));
+            }
+
+        } catch (IOException | ParseException e) {
+            e.printStackTrace();
+        }
+    }
+
     MetadataInterface metadataInterface = new MetadataInterfaceImpl();
 
     @GET
-    @Path("/banking/data-recipients/brands/software-products/status")
+    @Path("/data-recipients/brands/software-products/status")
     @Produces("application/json")
     public Response getSoftwareProductsStatus() {
 
         Response responseGet;
 
         try {
-            softwareProductMap = metadataInterface.getSoftwareDetails();
             responseGet = Response.status(200).entity(softwareProductMap).build();
         } catch (MetadataException a) {
             responseGet = Response.status(a.getErrorCode()).build();
@@ -54,14 +96,13 @@ public class MetadataService {
     }
 
     @GET
-    @Path("/banking/data-recipients/status")
+    @Path("/data-recipients/status")
     @Produces("application/json")
     public Response getDataRecipientsStatus() {
 
         Response responseGet;
 
         try {
-            dataRecipientMap = metadataInterface.getADRDetails();
             responseGet = Response.status(200).entity(dataRecipientMap).build();
         } catch (MetadataException a) {
             responseGet = Response.status(a.getErrorCode()).build();
@@ -72,7 +113,7 @@ public class MetadataService {
 
 
     @POST
-    @Path("/metadata/adr/status-update")
+    @Path("/adr/status-update")
     @Produces("application/json")
     public Response postSoftwareProductsStatus(@ApiParam(value = "The details of the new Software Status Update" ,
             required = true) SoftwareDetails body) {
@@ -95,7 +136,7 @@ public class MetadataService {
     }
 
     @POST
-    @Path("/metadata/software/status-update")
+    @Path("/software/status-update")
     @Produces("application/json")
     public Response postDataRecipientsStatus(@ApiParam(value = "The details of the new ADR Status Update" ,
             required = true) ADRDetails body) {

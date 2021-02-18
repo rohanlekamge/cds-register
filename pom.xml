@@ -74,7 +74,7 @@
                             <directory>src/main/webapp</directory>
                         </resource>
                     </webResources>
-                    <warName>api#openbanking#backend#cds-register</warName>
+                    <warName>register</warName>
                 </configuration>
             </plugin>
             <plugin>
