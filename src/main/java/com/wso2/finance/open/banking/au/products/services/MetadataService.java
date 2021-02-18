@@ -49,10 +49,38 @@ public class MetadataService {
 
         //JSON parser object to parse read file
         JSONParser jsonParser = new JSONParser();
-        JSONArray dataRecipientsJsonArray = new JSONArray();
         JSONArray softwareProductJsonArray = new JSONArray();
 
-        try (FileReader reader = new FileReader("metadata.json"))
+        try (FileReader reader = new FileReader("softwareProducts.json"))
+        {
+            //Read JSON file
+            Object obj = jsonParser.parse(reader);
+
+            JSONArray metadataList = (JSONArray) obj;
+            System.out.println(metadataList);
+
+            //Iterate over array
+            for(Object emp: metadataList){
+                softwareProductJsonArray = (JSONArray) ((JSONObject) emp).get("softwareProducts");
+            }
+
+            for (int r = 0; r < softwareProductJsonArray.size(); r++) {
+                JSONObject objj = (JSONObject) softwareProductJsonArray.get(r);
+                softwareProductMap.put(objj.getString("softwareProductId"), objj.getString("softwareProductStatus"));
+            }
+
+        } catch (IOException | ParseException e) {
+            e.printStackTrace();
+        }
+    }
+
+    static {
+
+        //JSON parser object to parse read file
+        JSONParser jsonParser = new JSONParser();
+        JSONArray dataRecipientsJsonArray = new JSONArray();
+
+        try (FileReader reader = new FileReader("dataRecipients.json"))
         {
             //Read JSON file
             Object obj = jsonParser.parse(reader);
@@ -63,17 +91,11 @@ public class MetadataService {
             //Iterate over array
             for(Object emp: metadataList){
                 dataRecipientsJsonArray = (JSONArray) ((JSONObject) emp).get("dataRecipients");
-                softwareProductJsonArray = (JSONArray) ((JSONObject) emp).get("softwareProducts");
             }
 
             for (int r = 0; r < dataRecipientsJsonArray.size(); r++) {
                 JSONObject objj = (JSONObject) dataRecipientsJsonArray.get(r);
                 dataRecipientMap.put(objj.getString("dataRecipientId"), objj.getString("dataRecipientStatus"));
-            }
-
-            for (int r = 0; r < softwareProductJsonArray.size(); r++) {
-                JSONObject objj = (JSONObject) softwareProductJsonArray.get(r);
-                softwareProductMap.put(objj.getString("softwareProductId"), objj.getString("softwareProductStatus"));
             }
 
         } catch (IOException | ParseException e) {

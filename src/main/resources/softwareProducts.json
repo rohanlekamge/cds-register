@@ -8,15 +8,5 @@
       "softwareProductId":"740C368F-ECF9-4D29-A2EA-0514A66B0C22",
       "softwareProductStatus":"Active"
     }
-  ],
-  "dataRecipients":[
-    {
-      "dataRecipientId":"3B0B0A7B-3E7B-4A2C-9497-E357A71D07C8",
-      "dataRecipientStatus":"Active"
-    },
-    {
-      "dataRecipientId":"3B0B0A7B-3E7B-4A2C-9497-E357A71D0713",
-      "dataRecipientStatus":"Active"
-    }
   ]
 }
