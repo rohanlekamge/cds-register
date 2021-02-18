@@ -12,17 +12,20 @@
 
 package com.wso2.finance.open.banking.au.products.services;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.wso2.finance.open.banking.au.products.exception.MetadataException;
 import com.wso2.finance.open.banking.au.products.model.ADRDetails;
 import com.wso2.finance.open.banking.au.products.model.SoftwareDetails;
-import com.wso2.finance.open.banking.au.products.services.impl.MetadataInterfaceImpl;
+
 import io.swagger.annotations.ApiParam;
 import org.json.JSONObject;
 import org.json.simple.JSONArray;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import javax.jws.WebService;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -40,6 +43,7 @@ public class MetadataService {
 
     private static Map<String, String> softwareProductMap;
     private static Map<String, String> dataRecipientMap;
+    private static final JsonParser jsonParser = new JsonParser();
 
     static {
 
@@ -76,8 +80,6 @@ public class MetadataService {
             e.printStackTrace();
         }
     }
-
-    MetadataInterface metadataInterface = new MetadataInterfaceImpl();
 
     @GET
     @Path("/data-recipients/brands/software-products/status")
@@ -124,9 +126,14 @@ public class MetadataService {
             responsePost = Response.status(400).build();
         } else {
             try {
-                SoftwareDetails softwareDetailsResponse =
-                        metadataInterface.postSoftwareDetails(body.getSoftwareProductId(), body.getSoftwareProductStatus());
-                responsePost = Response.status(200).entity(softwareDetailsResponse).build();
+
+                softwareProductMap.put(body.getSoftwareProductId(), body.getSoftwareProductStatus());
+
+                JsonObject metadata = postSoftwareProductsStatusResponse(body.getSoftwareProductId(), body.getSoftwareProductStatus());
+                String response = getResponse(metadata);
+
+                responsePost = Response.status(200).entity(response).build();
+
             } catch (MetadataException a) {
                 responsePost = Response.status(a.getErrorCode()).build();
             }
@@ -147,9 +154,14 @@ public class MetadataService {
             responsePost = Response.status(400).build();
         } else {
             try {
-                ADRDetails adrDetailsResponse =
-                        metadataInterface.postADRDetails(body.getDataRecipientId(), body.getDataRecipientStatus());
-                responsePost = Response.status(200).entity(adrDetailsResponse).build();
+
+                dataRecipientMap.put(body.getDataRecipientId(), body.getDataRecipientStatus());
+
+                JsonObject metadata = postDataRecipientsStatusResponse(body.getDataRecipientId(), body.getDataRecipientStatus());
+                String response = getResponse(metadata);
+
+                responsePost = Response.status(200).entity(response).build();
+
             } catch (MetadataException a) {
                 responsePost = Response.status(a.getErrorCode()).build();
             }
@@ -158,4 +170,30 @@ public class MetadataService {
         return responsePost;
     }
 
+    protected static String getResponse(JsonObject metadata) {
+
+        JsonObject response = new JsonObject();
+        response.add("metadata", metadata);
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        String formattedResponse = gson.toJson(response);
+        return formattedResponse;
+    }
+
+    private static JsonObject postSoftwareProductsStatusResponse(String softwareProductId, String softwareProductStatus) {
+
+        String metaJson = "{  \n" +
+                "        \"softwareProductId\": \"" + softwareProductId + "\",\n" +
+                "        \"softwareProductStatus\": \"" + softwareProductStatus + "\",\n" +
+                "   }\n";
+        return jsonParser.parse(metaJson).getAsJsonObject();
+    }
+
+    private static JsonObject postDataRecipientsStatusResponse(String dataRecipientId, String dataRecipientStatus) {
+
+        String metaJson = "{  \n" +
+                "        \"dataRecipientId\": \"" + dataRecipientId + "\",\n" +
+                "        \"dataRecipientStatus\": \"" + dataRecipientStatus + "\",\n" +
+                "   }\n";
+        return jsonParser.parse(metaJson).getAsJsonObject();
+    }
 }
