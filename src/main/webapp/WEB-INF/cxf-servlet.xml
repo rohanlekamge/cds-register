@@ -19,7 +19,7 @@
     <bean class="org.springframework.context.support.PropertySourcesPlaceholderConfigurer"/>
     <bean class="org.springframework.beans.factory.config.PreferencesPlaceholderConfigurer"/>
 
-    <jaxrs:server id="metadataservice" address="/register">
+    <jaxrs:server id="metadataservice" address="/">
         <jaxrs:serviceBeans>
             <ref bean="metaServiceBean"/>
         </jaxrs:serviceBeans>

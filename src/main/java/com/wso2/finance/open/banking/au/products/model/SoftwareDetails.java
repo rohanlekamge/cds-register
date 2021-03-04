@@ -14,34 +14,26 @@
 package com.wso2.finance.open.banking.au.products.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
 
-import javax.validation.constraints.NotNull;
-
-@ApiModel(description = "Definition for Software Status Update request body")
 public class SoftwareDetails {
 
-    @NotNull
     private String softwareProductId = null;
-
-    @NotNull
     private String softwareProductStatus = null;
 
-    @ApiModelProperty(required = true, value = "")
     @JsonProperty("softwareProductId")
     public String getSoftwareProductId() {
         return softwareProductId;
     }
+    @JsonProperty("softwareProductId")
     public void setSoftwareProductId(String softwareProductId) {
         this.softwareProductId = softwareProductId;
     }
 
-    @ApiModelProperty(required = true, value = "")
     @JsonProperty("softwareProductStatus")
     public String getSoftwareProductStatus() {
         return softwareProductStatus;
     }
+    @JsonProperty("softwareProductStatus")
     public void setSoftwareProductStatus(String softwareProductStatus) {
         this.softwareProductStatus = softwareProductStatus;
     }
