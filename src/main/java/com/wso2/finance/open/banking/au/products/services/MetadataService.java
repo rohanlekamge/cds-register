@@ -151,8 +151,11 @@ public class MetadataService {
                 softwareDetails.setSoftwareProductId(object.getString("softwareProductId"));
                 softwareDetails.setSoftwareProductStatus(object.getString("softwareProductStatus"));
 
-                if (softwareDetails.getSoftwareProductStatus().equals("Active") || softwareDetails.getSoftwareProductStatus().equals("Inactive") ||  softwareDetails.getSoftwareProductStatus().equals("Removed")) {
-                    softwareProductMap.put(softwareDetails.getSoftwareProductId(), softwareDetails.getSoftwareProductStatus());
+                if (softwareDetails.getSoftwareProductStatus().equals("Active") ||
+                        softwareDetails.getSoftwareProductStatus().equals("Inactive") ||
+                        softwareDetails.getSoftwareProductStatus().equals("Removed")) {
+                    softwareProductMap.put(softwareDetails.getSoftwareProductId(),
+                            softwareDetails.getSoftwareProductStatus());
                 }
             }
 
@@ -265,9 +268,11 @@ public class MetadataService {
             count  = count + 1;
 
             if (softwareProductMap.size() == 1 || softwareProductMap.size() == count) {
-                metaJsonTemp = "{\"softwareProductId\":"+"\""+softwareProductId+"\""+",\"softwareProductStatus\":"+"\""+softwareProductStatus+"\""+"}";
+                metaJsonTemp = "{\"softwareProductId\":"+"\""+softwareProductId+"\""+",\"softwareProductStatus\":"+
+                        "\""+softwareProductStatus+"\""+"}";
             } else {
-                metaJsonTemp = "{\"softwareProductId\":"+"\""+softwareProductId+"\""+",\"softwareProductStatus\":"+"\""+softwareProductStatus+"\""+"},";
+                metaJsonTemp = "{\"softwareProductId\":"+"\""+softwareProductId+"\""+",\"softwareProductStatus\":"+
+                        "\""+softwareProductStatus+"\""+"},";
             }
 
             metaJson.append(metaJsonTemp);
